@@ -1,11 +1,18 @@
 import urllib2
-import re
+import re,sys
+from fake_useragent import UserAgent
 from HTMLParser import HTMLParser
 from BeautifulSoup import BeautifulSoup
 
+#let me fake_useragent
+ua = UserAgent()
+ua.chrome
 
 base_tag_url = "https://www.goodreads.com/quotes/tag/"
-tag = raw_input("type the tag to mine - ")
+if len(sys.argv)<1:
+    tag = raw_input("type the tag to mine - ")
+else:
+    tag = sys.argv[1]
 page=1
 
 url = base_tag_url+tag
@@ -26,9 +33,13 @@ init_quotetext = init_soup.findAll("div","quoteText")
 
 for i in range(len(init_quotetext)):
     init_clean_text = init_quotetext[i].text.replace("&ldquo;","").split('&')[0]
-    print init_clean_text.encode("utf-8")
+    init_clean_text = init_clean_text.encode("utf-8")
+    print init_clean_text
     print "Indexed : " + str(sentence_count(init_clean_text))
     print "\n"
+    
+    with open(tag+".txt", "a") as myfile:
+        myfile.write(init_clean_text)
 
 
 
@@ -52,8 +63,12 @@ while (next_page):
 
     for i in range(len(quotetext)):
         clean_text = quotetext[i].text.replace("&ldquo;","").split('&')[0]
-        print clean_text.encode("utf-8")
+        clean_text = clean_text.encode("utf-8")
+        print clean_text
         print "Indexed : " + str(sentence_count(clean_text))
         print "\n"
+        
+        with open(tag+".txt", "a") as myfile:
+            myfile.write(clean_text+"\n\n\n")
 
 print "Text Mining for "+tag+ " has completed"
